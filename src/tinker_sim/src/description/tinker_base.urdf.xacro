@@ -1,0 +1,149 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="tinker_base">
+
+  <!-- Add meshes -->
+  <!-- There is a mesh can't be loaded in rviz and gazebo at the same time -->
+  <xacro:if value="$(arg use_rviz)">
+    <xacro:include filename="inc/base_macro_display.xacro"/>
+  </xacro:if>
+  <xacro:if value="$(arg use_gazebo)">
+    <xacro:include filename="inc/base_macro_gazebo.xacro"/>
+  </xacro:if>
+
+
+  <!-- Define Parameters-->
+  <xacro:property name="stl_trans_xyz" value="0.32 0.3 -0.23" />
+  <xacro:property name="stl_rotate_rpy" value="0. 0. 3.1415926" />
+  <xacro:property name="stl_viz_scale" value="1 1 1" />
+  <xacro:property name="urg_front_trans_xyz" value="0.25 0. 0.25" />
+
+  <!-- Define Color-->
+  <material name="white">
+      <color rgba="1 1 1 1" />
+  </material>
+
+  <material name="orange">
+      <color rgba="1 0.3 0.1 1"/>
+  </material>
+
+  <material name="blue">
+      <color rgba="0.2 0.2 1 1"/>
+  </material>
+
+  <material name="black">
+      <color rgba="0 0 0 1"/>
+  </material>
+
+  <material name="silver">
+      <color rgba="0.6 0.6 0.6 0 1"/>
+  </material>
+
+  <!-- Tinker Robot Base -->
+  <link name="base_link">
+  </link>
+
+  <link name="tinker">
+    <visual>
+      <origin xyz="${stl_trans_xyz}" rpy="${stl_rotate_rpy}" />
+      <geometry>
+        <mesh
+          filename="${stl_path}"
+          scale="${stl_viz_scale}" />
+      </geometry>
+      <material name="silver"/>
+    </visual>
+    <collision>
+      <origin xyz="${stl_trans_xyz}" rpy="${stl_rotate_rpy}" />
+      <geometry>
+        <mesh
+          filename="${stl_path}"
+          scale="${stl_viz_scale}" />
+      </geometry>
+    </collision>
+    <inertial>
+      <origin xyz="0 0 0.3" rpy="0 0 0" />
+      <mass value="25" />
+      <inertia ixx="0.3" ixy="0" ixz="0" iyy="0.3" iyz="0" izz="0.3" />
+    </inertial>
+  </link>
+
+  <joint name="base_to_base" type="fixed">
+    <parent link="base_link" />
+    <child link="tinker" />
+    <origin xyz="0 0 0" />
+  </joint>
+
+  <link name="laser" />
+  <joint name="base_to_urg_front" type="fixed">
+    <parent link="base_link" />
+    <child link="laser" />
+    <origin xyz="${urg_front_trans_xyz}" />
+  </joint>
+
+  <!-- Robot Suspension and Wheels -->
+  <xacro:macro name="susp_gen" params="name prefix_1 prefix_2">
+    <joint name="${name}_steering_joint" type="revolute">
+      <origin xyz="${prefix_1*0.22} ${prefix_2*0.17} 0.16"/>
+      <parent link="tinker"/>
+      <child link="${name}_steering_link"/>
+      <limit effort="5" lower="-2.1" upper="2.1" velocity="6.28"/>
+      <axis xyz="0 0 1"/>
+    </joint>
+
+    <link name="${name}_steering_link">
+      <visual>
+        <geometry>
+          <xacro:steering_link_visual_mesh name="fl"/>
+        </geometry>
+      </visual>
+      <collision>
+        <geometry>
+          <xacro:steering_link_collision_mesh/>
+        </geometry>
+      </collision>
+      <inertial>
+        <origin xyz="0 0 -0.02"/>
+        <mass value="0.15"/>
+        <inertia ixx="0.00001" ixy="0" ixz="0" iyy="0.00001" iyz="0" izz="0.000004"/>
+      </inertial>
+    </link>
+  </xacro:macro>  
+
+  <xacro:macro name="wheel_gen" params="name prefix_1 prefix_2">
+    <joint name="${name}_wheel_joint" type="continuous">
+      <origin rpy="0 0 ${(prefix_2 + 1) / 2 *pi}" xyz="0 ${prefix_2*0.021} -0.025"/>
+      <parent link="${name}_steering_link"/>
+      <child link="${name}_wheel_link"/>
+      <limit effort="1.5" velocity="20"/>
+      <axis xyz="0 ${-1 * prefix_2} 0"/>
+    </joint>
+
+    <link name="${name}_wheel_link">
+      <visual>
+        <geometry>
+          <xacro:wheel_link_visual_mesh/>
+        </geometry>
+      </visual>
+      <collision>
+        <geometry>
+          <xacro:wheel_link_collision_mesh/>
+        </geometry>
+      </collision>
+      <inertial>
+        <origin xyz="0.0 -0.007 -0.0"/>
+        <mass value="0.05"/>
+        <inertia ixx="0.00001" ixy="0" ixz="0" iyy="0.000018" iyz="0" izz="0.00001"/>
+      </inertial>
+    </link>
+  </xacro:macro>
+
+  <xacro:susp_gen name="fl" prefix_1="1" prefix_2="1" />
+  <xacro:wheel_gen name="fl" prefix_1="1" prefix_2="1" />
+  <xacro:susp_gen name="fr" prefix_1="1" prefix_2="-1" />
+  <xacro:wheel_gen name="fr" prefix_1="1" prefix_2="-1" />
+  <xacro:susp_gen name="rl" prefix_1="-1" prefix_2="1" />
+  <xacro:wheel_gen name="rl" prefix_1="-1" prefix_2="1" />
+  <xacro:susp_gen name="rr" prefix_1="-1" prefix_2="-1" />
+  <xacro:wheel_gen name="rr" prefix_1="-1" prefix_2="-1" />
+
+</robot>
