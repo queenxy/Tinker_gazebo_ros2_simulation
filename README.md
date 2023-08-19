@@ -49,6 +49,10 @@ ros2 launch tinker_sim gazebo_sim.launch.py
 ```
 Set `use_teleop:=True` to control the base by keyboard
 
+Use the following command to test the ur controller work properly:
+```sh
+ros2 launch tinker_sim test_joint_trajectory_controller.launch.py
+```
 ### Nav Simulation
 #### Use Lidar to setup map
 Launch slam toolbox and localization

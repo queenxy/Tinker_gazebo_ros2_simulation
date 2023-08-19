@@ -1,0 +1,65 @@
+publisher_scaled_joint_trajectory_controller:
+  ros__parameters:
+
+    controller_name: "scaled_joint_trajectory_controller"
+    wait_sec_between_publish: 6
+
+    goal_names: ["pos1", "pos2", "pos3", "pos4"]
+    pos1:
+      positions: [0.785, -1.57, 0.785, 0.785, 0.785, 0.785]
+    pos2:
+      positions: [0.0, -1.57, 0.0, 0.0, 0.0, 0.0]
+    pos3:
+      positions: [0.0, -1.57, 0.0, 0.0, -0.785, 0.0]
+    pos4:
+      positions: [0.0, -1.57, 0.0, 0.0, 0.0, 0.0]
+
+    joints:
+      - ur_shoulder_pan_joint
+      - ur_shoulder_lift_joint
+      - ur_elbow_joint
+      - ur_wrist_1_joint
+      - ur_wrist_2_joint
+      - ur_wrist_3_joint
+
+    check_starting_point: true
+    starting_point_limits:
+      ur_shoulder_pan_joint: [-0.1,0.1]
+      ur_shoulder_lift_joint: [-1.6,-1.5]
+      ur_elbow_joint: [-0.1,0.1]
+      ur_wrist_1_joint: [-1.6,-1.5]
+      ur_wrist_2_joint: [-0.1,0.1]
+      ur_wrist_3_joint: [-0.1,0.1]
+
+publisher_joint_trajectory_controller:
+  ros__parameters:
+
+    controller_name: "joint_trajectory_controller"
+    wait_sec_between_publish: 6
+
+    goal_names: ["pos1", "pos2", "pos3", "pos4"]
+    pos1:
+      positions: [0.785, -1.57, 0.785, 0.785, 0.785, 0.785]
+    pos2:
+      positions: [0.0, -1.57, 0.0, 0.0, 0.0, 0.0]
+    pos3:
+      positions: [0.0, -1.57, 0.0, 0.0, -0.785, 0.0]
+    pos4:
+      positions: [0.0, -1.57, 0.0, 0.0, 0.0, 0.0]
+
+    joints:
+      - ur_shoulder_pan_joint
+      - ur_shoulder_lift_joint
+      - ur_elbow_joint
+      - ur_wrist_1_joint
+      - ur_wrist_2_joint
+      - ur_wrist_3_joint
+
+    check_starting_point: true
+    starting_point_limits:
+      ur_shoulder_pan_joint: [-0.1,0.1]
+      ur_shoulder_lift_joint: [-1.6,-1.5]
+      ur_elbow_joint: [-0.1,0.1]
+      ur_wrist_1_joint: [-1.6,-1.5]
+      ur_wrist_2_joint: [-0.1,0.1]
+      ur_wrist_3_joint: [-0.1,0.1]
