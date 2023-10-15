@@ -1,5 +1,6 @@
 import launch
 from launch.substitutions import Command, LaunchConfiguration
+from launch.substitutions import Command, PathJoinSubstitution, LaunchConfiguration
 import launch_ros
 import os
 
@@ -7,8 +8,11 @@ def generate_launch_description():
     pkg_name = 'tinker_sim'
     model_name = 'src/description/tinker_display.urdf.xacro'
     pkg_share = launch_ros.substitutions.FindPackageShare(package=pkg_name).find(pkg_name)
-    default_model_path = os.path.join(pkg_share, model_name)
-    default_rviz_config_path = os.path.join(pkg_share, 'rviz/arm_config.rviz')
+    # default_model_path = os.path.join(pkg_share, model_name)
+    default_model_path = PathJoinSubstitution(
+                [launch_ros.substitutions.FindPackageShare("tinker_description"), "urdf", "tinker_display.urdf.xacro"]
+            )
+    default_rviz_config_path = os.path.join(pkg_share, 'rviz/tinker_config.rviz')
 
     robot_state_publisher_node = launch_ros.actions.Node(
         package='robot_state_publisher',

@@ -21,6 +21,8 @@ def generate_launch_description():
     use_teleop = LaunchConfiguration("use_teleop")
     rviz_config_file = LaunchConfiguration("rviz_config_file")
     ur_initial_joint_controller = LaunchConfiguration("ur_initial_joint_controller")
+    description_package = LaunchConfiguration("description_package")
+    description_file = LaunchConfiguration("description_file")
 
     declare_rviz_cmd = DeclareLaunchArgument(
         'start_rviz',
@@ -35,7 +37,7 @@ def generate_launch_description():
     declare_rviz_config_file = DeclareLaunchArgument(
         'rviz_config_file',
         default_value=os.path.join(robot_bringup_dir,
-                                   'rviz', 'arm_config.rviz'),
+                                   'rviz', 'tinker_config.rviz'),
         description='Full path to the rviz config file')
     
     declare_ur_initial_joint_controller = DeclareLaunchArgument(
@@ -44,11 +46,26 @@ def generate_launch_description():
             description="Robot controller to start.",
         )
     
+    declare_description_package = DeclareLaunchArgument(
+            "description_package",
+            default_value="tinker_description",
+            description="Description package with robot URDF/XACRO files. Usually the argument \
+        is not set, it enables use of a custom description.",
+        )
+
+    declare_description_file = DeclareLaunchArgument(
+            "description_file",
+            default_value="tinker_gazebo.urdf.xacro",
+            description="URDF/XACRO description file with the robot.",
+        )
+    
     declared_arguments = [
         declare_rviz_cmd,
         declare_teleop_cmd,
         declare_rviz_config_file,
         declare_ur_initial_joint_controller,
+        declare_description_file,
+        declare_description_package,
     ]
 
 
@@ -58,7 +75,7 @@ def generate_launch_description():
             PathJoinSubstitution([FindExecutable(name="xacro")]),
             " ",
             PathJoinSubstitution(
-                [FindPackageShare("tinker_sim"), "src/description", "tinker_gazebo.urdf.xacro"]
+                [FindPackageShare(description_package), "urdf", description_file]
             ),
             " ",
             "use_gazebo_classic:=true",
