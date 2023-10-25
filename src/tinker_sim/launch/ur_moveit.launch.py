@@ -117,6 +117,12 @@ def launch_setup(context, *args, **kwargs):
             "prefix:=",
             prefix,
             " ",
+            "use_rviz:=",
+            "true",
+            " ",
+            "use_gazebo:=",
+            "false",
+            " ",
         ]
     )
     robot_description = {"robot_description": robot_description_content}
