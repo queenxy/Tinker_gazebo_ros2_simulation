@@ -218,6 +218,19 @@ def launch_setup(context, *args, **kwargs):
         ],
     )
 
+    move_group_demo = Node(
+        name="tinker_moveit_demo",
+        package="tinker_moveit",
+        executable="move_to_point",
+        output="screen",
+        parameters=[
+            robot_description,
+            robot_description_semantic,
+            robot_description_kinematics,
+            {"use_sim_time": True},
+        ],
+    )
+
     # rviz with moveit configuration
     rviz_config_file = PathJoinSubstitution(
         [FindPackageShare(moveit_config_package), "rviz", "view_robot.rviz"]
@@ -239,7 +252,7 @@ def launch_setup(context, *args, **kwargs):
         ],
     )
 
-    nodes_to_start = [move_group_node, rviz_node]
+    nodes_to_start = [move_group_node, rviz_node, move_group_demo]
 
     return nodes_to_start
 
