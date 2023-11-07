@@ -218,10 +218,9 @@ def launch_setup(context, *args, **kwargs):
         ],
     )
 
-    move_group_demo = Node(
-        name="tinker_moveit_demo",
+    tinker_moveit = Node(
         package="tinker_moveit",
-        executable="move_to_point",
+        executable="tinker_arm_controller",
         output="screen",
         parameters=[
             robot_description,
@@ -252,7 +251,7 @@ def launch_setup(context, *args, **kwargs):
         ],
     )
 
-    nodes_to_start = [move_group_node, rviz_node, move_group_demo]
+    nodes_to_start = [move_group_node, rviz_node, tinker_moveit]
 
     return nodes_to_start
 

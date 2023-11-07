@@ -1,5 +1,0 @@
-# Control UR5 service
-geometry_msgs/PoseStamped target_pose
-int64 cmd
----
-bool success

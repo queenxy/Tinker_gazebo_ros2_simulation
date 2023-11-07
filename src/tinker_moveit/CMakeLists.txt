@@ -13,6 +13,7 @@ find_package(moveit_msgs REQUIRED)
 find_package(moveit_ros_planning_interface REQUIRED)
 find_package(moveit_ros_move_group REQUIRED) 
 find_package(std_msgs REQUIRED)
+find_package(tinker_msgs REQUIRED)
 find_package(geometry_msgs REQUIRED)
 find_package(rosidl_default_generators REQUIRED)
 # find_package(moveit_visual_tools REQUIRED)
@@ -20,19 +21,12 @@ find_package(rosidl_default_generators REQUIRED)
 # further dependencies manually.
 # find_package(<dependency> REQUIRED)
 
-set(srv_files
-    srv/URControlService.srv)
+add_executable(tinker_arm_controller src/arm_controller.cpp)
+ament_target_dependencies(tinker_arm_controller rclcpp moveit moveit_msgs moveit_ros_planning_interface moveit_ros_move_group tinker_msgs)
 
-add_executable(move_to_point src/move_to_point.cpp)
-ament_target_dependencies(move_to_point rclcpp moveit moveit_msgs moveit_ros_planning_interface moveit_ros_move_group)
-
-rosidl_generate_interfaces(${PROJECT_NAME}
-  ${srv_files}
-  DEPENDENCIES geometry_msgs
-)
 
 install(TARGETS
-  move_to_point
+  tinker_arm_controller
   DESTINATION lib/${PROJECT_NAME})
 
 ament_package()
