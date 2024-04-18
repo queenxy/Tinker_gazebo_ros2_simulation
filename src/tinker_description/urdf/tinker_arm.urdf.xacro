@@ -110,4 +110,11 @@
     <origin xyz="0 0 0.2" />
   </joint>
 
+
+  <link name="wrist_camera" />
+  <joint name="camera_to_wrist" type="fixed">
+    <parent link="$(arg prefix)wrist_3_link" />
+    <child link="wrist_camera" />
+    <origin xyz="0 -0.07 -0.025"/>
+  </joint>
 </robot>

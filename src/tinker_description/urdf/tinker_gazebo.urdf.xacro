@@ -139,6 +139,9 @@
         <plugin filename="libgazebo_ros2_control.so" name="gazebo_ros2_control">
             <parameters>$(find tinker_sim)/config/tinker_controller_manager.yaml</parameters>
         </plugin>
+        <plugin name="joint_state_publisher" filename="libgazebo_ros_joint_state_publisher.so">
+            <jointName>left_wheel,right_wheel</jointName>
+        </plugin>
     </gazebo>
 
     

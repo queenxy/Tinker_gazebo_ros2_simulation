@@ -1,6 +1,8 @@
 #include <rclcpp/rclcpp.hpp>
 #include <moveit/move_group_interface/move_group_interface.h>
 #include <moveit/planning_scene_interface/planning_scene_interface.h>
+#include <tf2_ros/transform_listener.h>
+#include <tf2_geometry_msgs/tf2_geometry_msgs.h>
 
 #include <moveit_msgs/msg/display_robot_state.hpp>
 #include <moveit_msgs/msg/display_trajectory.hpp>
@@ -10,9 +12,13 @@
 
 #include <std_msgs/msg/bool.hpp>
 #include <std_srvs/srv/trigger.hpp>
+#include <geometry_msgs/msg/point.hpp>
+#include <geometry_msgs/msg/pose.hpp>
+#include <geometry_msgs/msg/quaternion.hpp>
 #include <tinker_msgs/srv/ur_control_service.hpp>
 
 #include <memory>
+#include <iostream>
 
 using namespace std;
 
@@ -27,6 +33,9 @@ class ArmController : public rclcpp::Node
                             std::bind(&ArmController::callback, this, std::placeholders::_1, std::placeholders::_2));
         initial_service = this->create_service<std_srvs::srv::Trigger>("tinker_arm_initial_service", 
                             std::bind(&ArmController::initial, this, std::placeholders::_1, std::placeholders::_2));
+
+        tf_buffer_ = std::make_unique<tf2_ros::Buffer>(this->get_clock());
+        tf_listener_ = std::make_shared<tf2_ros::TransformListener>(*tf_buffer_);
     }
 
     bool init_move_group(std::shared_ptr<moveit::planning_interface::MoveGroupInterface> _move_group) {
@@ -40,6 +49,9 @@ class ArmController : public rclcpp::Node
     std::shared_ptr<moveit::planning_interface::MoveGroupInterface> move_group;    // we pass the shared_ptr of move group
     moveit::planning_interface::PlanningSceneInterface planning_scene_interface;
 
+    std::shared_ptr<tf2_ros::TransformListener> tf_listener_{nullptr};
+    std::unique_ptr<tf2_ros::Buffer> tf_buffer_;
+
     void callback(const std::shared_ptr<tinker_msgs::srv::URControlService::Request> request,
           std::shared_ptr<tinker_msgs::srv::URControlService::Response> response);
     void initial(const std::shared_ptr<std_srvs::srv::Trigger::Request> request,
@@ -50,7 +62,40 @@ class ArmController : public rclcpp::Node
 void ArmController::callback(const std::shared_ptr<tinker_msgs::srv::URControlService::Request> request,
           std::shared_ptr<tinker_msgs::srv::URControlService::Response> response)
 {   
-    move_group->setPoseTarget(request->target_pose);
+    geometry_msgs::msg::Pose target_pose;
+    target_pose = request->target_pose;
+    cout << target_pose.position.x << endl;
+
+    geometry_msgs::msg::TransformStamped t;
+    try {
+          t = tf_buffer_->lookupTransform(
+            "base_link", "wrist_camera",
+            tf2::TimePointZero);
+        } catch (const tf2::TransformException & ex) {
+          RCLCPP_INFO(
+            this->get_logger(), "Could not transform wrist_camera to base_link");
+          return;
+        }
+
+    geometry_msgs::msg::Vector3 translation;
+    geometry_msgs::msg::Quaternion quaternion;
+    translation = t.transform.translation;
+    quaternion = t.transform.rotation;
+
+    // cout << translation << endl;
+
+    target_pose.position.x += translation.x;
+    target_pose.position.y += translation.y;
+    target_pose.position.z += translation.z;
+    tf2::Quaternion q_ori, q_rot, q_new;
+    tf2::convert(target_pose.orientation,q_ori);
+    tf2::convert(quaternion,q_rot);
+    q_new = q_rot * q_ori;
+    q_new.normalize();
+    target_pose.orientation = tf2::toMsg(q_new);
+    cout << target_pose.position.x << endl;
+    
+    move_group->setPoseTarget(target_pose);
 
     moveit::planning_interface::MoveGroupInterface::Plan my_plan;
 

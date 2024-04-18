@@ -22,7 +22,7 @@ find_package(rosidl_default_generators REQUIRED)
 # find_package(<dependency> REQUIRED)
 
 add_executable(tinker_arm_controller src/arm_controller.cpp)
-ament_target_dependencies(tinker_arm_controller rclcpp moveit moveit_msgs moveit_ros_planning_interface moveit_ros_move_group tinker_msgs)
+ament_target_dependencies(tinker_arm_controller rclcpp moveit moveit_msgs moveit_ros_planning_interface moveit_ros_move_group tinker_msgs tf2 tf2_ros geometry_msgs)
 
 
 install(TARGETS
