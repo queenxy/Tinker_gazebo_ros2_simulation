@@ -92,7 +92,7 @@
      reverse_ip="$(arg reverse_ip)"
      script_command_port="$(arg script_command_port)"
      >
-     <origin xyz="0.1 0 0.64" rpy="0 0 0" />          <!-- position robot on tinker base-->
+     <origin xyz="0.1 0 0.64" rpy="0 0 -0.785" />          <!-- position robot on tinker base-->
    </xacro:ur_robot>
 
   <xacro:robotiq_arg2f_140 prefix="$(arg prefix)"/>
@@ -100,7 +100,7 @@
   <joint name="arm_to_finger" type="fixed">
     <parent link="$(arg tf_prefix)tool0" />
     <child link="$(arg prefix)robotiq_arg2f_base_link" />
-    <origin xyz="0 0 0" />
+    <origin xyz="0 0 0" rpy="0 0 1.57"/>
   </joint> 
 
   <link name="gripper" />
@@ -115,6 +115,25 @@
   <joint name="camera_to_wrist" type="fixed">
     <parent link="$(arg prefix)wrist_3_link" />
     <child link="wrist_camera" />
-    <origin xyz="0 -0.07 -0.025"/>
+    <origin xyz="0 -0.08 -0.025"/>
   </joint>
+
+  <link name="realsense">
+    <visual>
+      <geometry>
+       <box size="0.1 0.04 0.02"/>
+      </geometry>
+    </visual>
+    <collision>
+      <geometry>
+       <box size="0.1 0.04 0.02"/>
+      </geometry>
+    </collision>
+  </link>
+  <joint name="fix_realsense" type="fixed">
+    <parent link="wrist_camera" />
+    <child link="realsense" />
+    <origin xyz="0. 0.02 0." />
+  </joint>
+  
 </robot>

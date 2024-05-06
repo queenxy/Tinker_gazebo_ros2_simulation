@@ -137,13 +137,13 @@
     </link>
   </xacro:macro>
 
-  <xacro:susp_gen name="fl" prefix_1="1" prefix_2="1" />
+  <!-- <xacro:susp_gen name="fl" prefix_1="1" prefix_2="1" />
   <xacro:wheel_gen name="fl" prefix_1="1" prefix_2="1" />
   <xacro:susp_gen name="fr" prefix_1="1" prefix_2="-1" />
   <xacro:wheel_gen name="fr" prefix_1="1" prefix_2="-1" />
   <xacro:susp_gen name="rl" prefix_1="-1" prefix_2="1" />
   <xacro:wheel_gen name="rl" prefix_1="-1" prefix_2="1" />
   <xacro:susp_gen name="rr" prefix_1="-1" prefix_2="-1" />
-  <xacro:wheel_gen name="rr" prefix_1="-1" prefix_2="-1" />
+  <xacro:wheel_gen name="rr" prefix_1="-1" prefix_2="-1" /> -->
 
 </robot>

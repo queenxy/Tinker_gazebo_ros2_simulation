@@ -82,18 +82,25 @@ void ArmController::callback(const std::shared_ptr<tinker_msgs::srv::URControlSe
     translation = t.transform.translation;
     quaternion = t.transform.rotation;
 
-    // cout << translation << endl;
+    cout << target_pose.position.x <<' ' << target_pose.position.y << ' ' <<target_pose.position.z << endl;
+    cout << translation.x << ' ' <<translation.y << ' ' << translation.z << endl;
 
-    target_pose.position.x += translation.x;
-    target_pose.position.y += translation.y;
-    target_pose.position.z += translation.z;
     tf2::Quaternion q_ori, q_rot, q_new;
     tf2::convert(target_pose.orientation,q_ori);
     tf2::convert(quaternion,q_rot);
+    tf2::Matrix3x3 mat(q_rot);
+
+    float x_ori, y_ori, z_ori;
+    x_ori = target_pose.position.x;
+    y_ori = target_pose.position.y;
+    z_ori = target_pose.position.z;
+    target_pose.position.x = x_ori * mat[0][0] + y_ori * mat[0][1] + z_ori * mat[0][2] + translation.x;
+    target_pose.position.y = x_ori * mat[1][0] + y_ori * mat[1][1] + z_ori * mat[1][2] + translation.y;
+    target_pose.position.z = x_ori * mat[2][0] + y_ori * mat[2][1] + z_ori * mat[2][2] + translation.z;
     q_new = q_rot * q_ori;
     q_new.normalize();
     target_pose.orientation = tf2::toMsg(q_new);
-    cout << target_pose.position.x << endl;
+    cout << target_pose.position.x << ' ' << target_pose.position.y << ' ' << target_pose.position.z << endl;
     
     move_group->setPoseTarget(target_pose);
 
