@@ -143,15 +143,25 @@ def generate_launch_description():
         condition=IfCondition(use_teleop),
     )
 
+    bridge = Node(
+        package='ros_gz_bridge',
+        executable='parameter_bridge',
+        arguments=[
+            '/clock@rosgraph_msgs/msg/Clock[ignition.msgs.Clock',  # Works fine
+        ],
+        output='screen'
+    )
+
     nodes = [
         robot_state_publisher,
         joint_state_broadcaster_spawner,
         ur_joint_controller_spawner,
         # tinker_nav_controller_spawner,
         rviz_node,
-        teleop_node,
+        # teleop_node,
         gazebo,
         spawn_entity,
+        bridge
     ]
 
     return LaunchDescription(declared_arguments + nodes)

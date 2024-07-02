@@ -194,6 +194,12 @@ def launch_setup(context, *args, **kwargs):
         "publish_transforms_updates": True,
     }
 
+    octomap_config = {'octomap_frame': 'camera_rgb_optical_frame', 
+                      'octomap_resolution': 0.05,
+                      'max_range': 5.0}
+
+    octomap_updater_config = load_yaml('tinker_description', 'config/sensors_3d.yaml')
+
     warehouse_ros_config = {
         "warehouse_plugin": "warehouse_ros_sqlite::DatabaseConnection",
         "warehouse_host": warehouse_sqlite_path,
@@ -213,9 +219,22 @@ def launch_setup(context, *args, **kwargs):
             trajectory_execution,
             moveit_controllers,
             planning_scene_monitor_parameters,
+            octomap_config,
+            octomap_updater_config,
             {"use_sim_time": use_sim_time},
             warehouse_ros_config,
         ],
+    )
+
+    octomap_node = Node(
+        package="moveit_ros_occupancy_map_monitor",
+        executable="moveit_ros_occupancy_map_server",
+        output="screen",
+        parameters=[
+            octomap_config,
+            octomap_updater_config,
+        ],
+
     )
 
     tinker_moveit = Node(
@@ -251,7 +270,7 @@ def launch_setup(context, *args, **kwargs):
         ],
     )
 
-    nodes_to_start = [move_group_node, rviz_node, tinker_moveit]
+    nodes_to_start = [move_group_node, rviz_node, tinker_moveit, octomap_node]
 
     return nodes_to_start
 

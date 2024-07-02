@@ -40,6 +40,7 @@ class ArmController : public rclcpp::Node
 
     bool init_move_group(std::shared_ptr<moveit::planning_interface::MoveGroupInterface> _move_group) {
         move_group = _move_group;
+        // current_state = move_group->getCurrentState(10)
     }
 
   private:
@@ -51,6 +52,7 @@ class ArmController : public rclcpp::Node
 
     std::shared_ptr<tf2_ros::TransformListener> tf_listener_{nullptr};
     std::unique_ptr<tf2_ros::Buffer> tf_buffer_;
+    // moveit::core::RobotStatePtr current_state = move_group->getCurrentState(10);
 
     void callback(const std::shared_ptr<tinker_msgs::srv::URControlService::Request> request,
           std::shared_ptr<tinker_msgs::srv::URControlService::Response> response);
@@ -64,43 +66,43 @@ void ArmController::callback(const std::shared_ptr<tinker_msgs::srv::URControlSe
 {   
     geometry_msgs::msg::Pose target_pose;
     target_pose = request->target_pose;
-    cout << target_pose.position.x << endl;
+    // cout << target_pose.position.x << endl;
 
-    geometry_msgs::msg::TransformStamped t;
-    try {
-          t = tf_buffer_->lookupTransform(
-            "base_link", "wrist_camera",
-            tf2::TimePointZero);
-        } catch (const tf2::TransformException & ex) {
-          RCLCPP_INFO(
-            this->get_logger(), "Could not transform wrist_camera to base_link");
-          return;
-        }
+    // geometry_msgs::msg::TransformStamped t;
+    // try {
+    //       t = tf_buffer_->lookupTransform(
+    //         "base_link", "wrist_camera",
+    //         tf2::TimePointZero);
+    //     } catch (const tf2::TransformException & ex) {
+    //       RCLCPP_INFO(
+    //         this->get_logger(), "Could not transform wrist_camera to base_link");
+    //       return;
+    //     }
 
-    geometry_msgs::msg::Vector3 translation;
-    geometry_msgs::msg::Quaternion quaternion;
-    translation = t.transform.translation;
-    quaternion = t.transform.rotation;
+    // geometry_msgs::msg::Vector3 translation;
+    // geometry_msgs::msg::Quaternion quaternion;
+    // translation = t.transform.translation;
+    // quaternion = t.transform.rotation;
 
-    cout << target_pose.position.x <<' ' << target_pose.position.y << ' ' <<target_pose.position.z << endl;
-    cout << translation.x << ' ' <<translation.y << ' ' << translation.z << endl;
+    // cout << target_pose.position.x <<' ' << target_pose.position.y << ' ' <<target_pose.position.z << endl;
+    // cout << translation.x << ' ' <<translation.y << ' ' << translation.z << endl;
 
-    tf2::Quaternion q_ori, q_rot, q_new;
-    tf2::convert(target_pose.orientation,q_ori);
-    tf2::convert(quaternion,q_rot);
-    tf2::Matrix3x3 mat(q_rot);
+    // tf2::Quaternion q_ori, q_rot, q_new;
+    // tf2::convert(target_pose.orientation,q_ori);
+    // tf2::convert(quaternion,q_rot);
+    // tf2::Matrix3x3 mat(q_rot);
 
-    float x_ori, y_ori, z_ori;
-    x_ori = target_pose.position.x;
-    y_ori = target_pose.position.y;
-    z_ori = target_pose.position.z;
-    target_pose.position.x = x_ori * mat[0][0] + y_ori * mat[0][1] + z_ori * mat[0][2] + translation.x;
-    target_pose.position.y = x_ori * mat[1][0] + y_ori * mat[1][1] + z_ori * mat[1][2] + translation.y;
-    target_pose.position.z = x_ori * mat[2][0] + y_ori * mat[2][1] + z_ori * mat[2][2] + translation.z;
-    q_new = q_rot * q_ori;
-    q_new.normalize();
-    target_pose.orientation = tf2::toMsg(q_new);
-    cout << target_pose.position.x << ' ' << target_pose.position.y << ' ' << target_pose.position.z << endl;
+    // float x_ori, y_ori, z_ori;
+    // x_ori = target_pose.position.x;
+    // y_ori = target_pose.position.y;
+    // z_ori = target_pose.position.z;
+    // target_pose.position.x = x_ori * mat[0][0] + y_ori * mat[0][1] + z_ori * mat[0][2] + translation.x;
+    // target_pose.position.y = x_ori * mat[1][0] + y_ori * mat[1][1] + z_ori * mat[1][2] + translation.y;
+    // target_pose.position.z = x_ori * mat[2][0] + y_ori * mat[2][1] + z_ori * mat[2][2] + translation.z;
+    // q_new = q_rot * q_ori;
+    // q_new.normalize();
+    // target_pose.orientation = tf2::toMsg(q_new);
+    // cout << target_pose.position.x << ' ' << target_pose.position.y << ' ' << target_pose.position.z << endl;
     
     move_group->setPoseTarget(target_pose);
 
@@ -119,17 +121,15 @@ void ArmController::callback(const std::shared_ptr<tinker_msgs::srv::URControlSe
 void ArmController::initial(const std::shared_ptr<std_srvs::srv::Trigger::Request> request,
           std::shared_ptr<std_srvs::srv::Trigger::Response> response)
 {   
-    const moveit::core::JointModelGroup* joint_model_group;
-    moveit::core::RobotStatePtr current_state = move_group->getCurrentState(10);
-    std::vector<double> joint_group_positions;
-    current_state->copyJointGroupPositions(joint_model_group, joint_group_positions);
+    std::vector<double> joint_group_positions(6);
+    
+    joint_group_positions[0] = -2.35;  // radians
+    joint_group_positions[1] = -1.22;
+    joint_group_positions[2] = -0.785;
+    joint_group_positions[3] = -2.1;
+    joint_group_positions[4] = -4.65;
+    joint_group_positions[5] = 0.0;
 
-    joint_group_positions[0] = -1.0;  // radians
-    joint_group_positions[1] = -1.0;
-    joint_group_positions[2] = -1.0;
-    joint_group_positions[3] = -1.0;
-    joint_group_positions[4] = -1.0;
-    joint_group_positions[5] = -1.0;
     bool within_bounds = move_group->setJointValueTarget(joint_group_positions);
     if (!within_bounds)
     {
@@ -140,7 +140,6 @@ void ArmController::initial(const std::shared_ptr<std_srvs::srv::Trigger::Reques
     move_group->setMaxAccelerationScalingFactor(0.05);
 
     moveit::planning_interface::MoveGroupInterface::Plan my_plan;
-
     bool plan_success = (move_group->plan(my_plan) == moveit::core::MoveItErrorCode::SUCCESS);
     bool move_success = (move_group->move() == moveit::core::MoveItErrorCode::SUCCESS);
 
