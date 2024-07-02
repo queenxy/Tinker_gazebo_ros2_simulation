@@ -156,7 +156,7 @@ def generate_launch_description():
         robot_state_publisher,
         joint_state_broadcaster_spawner,
         ur_joint_controller_spawner,
-        # tinker_nav_controller_spawner,
+        tinker_nav_controller_spawner,
         rviz_node,
         # teleop_node,
         gazebo,

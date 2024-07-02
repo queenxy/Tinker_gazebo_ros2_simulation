@@ -146,7 +146,7 @@
 
     
 
-    <!-- <ros2_control name="GazeboSystem" type="system">
+    <ros2_control name="GazeboSystem" type="system">
         <hardware>
             <plugin>gazebo_ros2_control/GazeboSystem</plugin>
         </hardware>
@@ -160,6 +160,6 @@
         <xacro:steering_interface name="fr"/>
         <xacro:steering_interface name="rl"/>
         <xacro:steering_interface name="rr"/>
-    </ros2_control> -->
+    </ros2_control>
 
 </robot>
