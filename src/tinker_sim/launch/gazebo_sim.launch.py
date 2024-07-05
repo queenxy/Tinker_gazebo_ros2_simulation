@@ -17,6 +17,7 @@ def generate_launch_description():
     robot_bringup_dir = get_package_share_directory('tinker_sim')
 
     # Declare arguments
+    use_sim_time = LaunchConfiguration("use_sim_time")
     start_rviz = LaunchConfiguration("start_rviz") 
     use_teleop = LaunchConfiguration("use_teleop")
     rviz_config_file = LaunchConfiguration("rviz_config_file")
@@ -24,6 +25,11 @@ def generate_launch_description():
     description_package = LaunchConfiguration("description_package")
     description_file = LaunchConfiguration("description_file")
 
+    declare_simtime_cmd = DeclareLaunchArgument(
+        'use_sim_time',
+        default_value='True',
+        description='Use simulation (Gazebo) clock if true.')
+    
     declare_rviz_cmd = DeclareLaunchArgument(
         'start_rviz',
         default_value='False',
@@ -60,6 +66,7 @@ def generate_launch_description():
         )
     
     declared_arguments = [
+        declare_simtime_cmd,
         declare_rviz_cmd,
         declare_teleop_cmd,
         declare_rviz_config_file,
@@ -95,7 +102,7 @@ def generate_launch_description():
         package="robot_state_publisher",
         executable="robot_state_publisher",
         output="screen",
-        parameters=[{"use_sim_time": True}, robot_description],
+        parameters=[{"use_sim_time": use_sim_time}, robot_description],
     )
 
     spawn_entity = Node(
