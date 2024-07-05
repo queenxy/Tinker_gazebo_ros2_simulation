@@ -133,7 +133,7 @@
   
   <xacro:realsense 
     parent="$(arg tf_prefix)tool0">
-    <origin xyz="0 -0.07 -0.015" rpy="0 -1.5708 1.5708" />          <!-- the result of calibration -->
+    <origin xyz="-0.009067 -0.060051 -0.013648" rpy="0.0268678 -1.5471549 1.5684374" />          <!-- the result of calibration -->
    </xacro:realsense>
 
 </robot>
